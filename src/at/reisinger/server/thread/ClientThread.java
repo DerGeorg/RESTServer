@@ -6,14 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ClientThread extends Thread{
-    private Socket       socket;
-    private int          id;
+    private final Socket       socket;
+    private final int          id;
     private PrintStream out;
-    private InputStream in;
     private String       cmd;
     private String       url;
-    private String       httpversion;
-    private StringBuilder rqBuilder;
+    private final StringBuilder rqBuilder;
 
     /**
      * Neuer Client wird erstellt
@@ -34,7 +32,7 @@ public class ClientThread extends Thread{
         try{
             System.out.println("Socket von Client #" + this.id + " wurde gestartet!");
             out = new PrintStream(socket.getOutputStream());
-            in = socket.getInputStream();
+            InputStream in = socket.getInputStream();
             getRequest();
             createResponse();
             socket.close();
@@ -109,7 +107,6 @@ public class ClientThread extends Thread{
         String host = requestsLines[1].split(" ")[1];
 
         this.url = path;
-        this.httpversion = version;
         this.cmd = method;
 
         List<String> headers = new ArrayList<>();
