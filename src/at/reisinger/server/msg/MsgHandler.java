@@ -80,7 +80,7 @@ public class MsgHandler {
         String returnStr = "";
         // Print keys and values
         for (Integer i : msgHashMap.keySet()) {
-            String item = "key: " + i + " value: " + msgHashMap.get(i);
+            String item = "key: " + i + " value: " + msgHashMap.get(i) + "\n";
             returnStr += item;
         }
         System.out.println(returnStr);
