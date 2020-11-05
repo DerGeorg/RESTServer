@@ -1,10 +1,12 @@
 package at.reisinger.server;
 
+import at.reisinger.server.msg.MsgHandler;
 import at.reisinger.server.thread.ClientThread;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Main {
     static final int port = 80;
@@ -18,7 +20,13 @@ public class Main {
             int id = 0;
             while (true){
                 Socket socket = serverSocket.accept();
-                new ClientThread(id, socket).start();
+                Thread client = new ClientThread(id, socket);
+                client.start();
+                try {
+                    client.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
