@@ -4,6 +4,11 @@ import at.reisinger.server.objects.Msg;
 
 import java.util.HashMap;
 
+/**
+ * Der Speicher der Nachrichten
+ * Mit hilfe einer HashMap werden die MsgId und die Msg selbst gespeichert
+ * @author Georg Reisinger
+ */
 public class MsgHandler {
     private HashMap<Integer , String> msgHashMap;
     private int lastID;
@@ -25,7 +30,7 @@ public class MsgHandler {
      * Ermitelt die nächste freie Id
      * @return Next ID
      */
-    public int nextId(){
+    private int nextId(){
         return this.lastID + 1;
     }
 
@@ -44,8 +49,8 @@ public class MsgHandler {
      * Msg löschen
      * @param id Message Id
      */
-    public void delMsg(int id){
-        msgHashMap.remove(id);
+    public String delMsg(int id){
+        return msgHashMap.remove(id);
     }
 
     /**
@@ -53,8 +58,8 @@ public class MsgHandler {
      * @param id Message Id
      * @param msg Message Text
      */
-    public void editMsg(int id, String msg){
-        msgHashMap.replace(id, msg);
+    public String editMsg(int id, String msg){
+        return msgHashMap.replace(id, msg);
     }
 
     /**

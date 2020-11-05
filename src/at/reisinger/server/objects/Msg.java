@@ -1,7 +1,8 @@
 package at.reisinger.server.objects;
 
 /**
- * Message Objekt
+ * Message Objekt beinmhaltet die MsgId und die Msg selbst
+ * @author Georg Reisinger
  */
 public class Msg {
     private int id;
@@ -26,29 +27,11 @@ public class Msg {
     }
 
     /**
-     * set field
-     *
-     * @param id Message Id
-     */
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    /**
      * get field
      *
      * @return msg Message String
      */
     public String getMsg() {
         return this.msg;
-    }
-
-    /**
-     * set field
-     *
-     * @param msg Message String
-     */
-    public void setMsg(String msg) {
-        this.msg = msg;
     }
 }

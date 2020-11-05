@@ -8,6 +8,10 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Verarbeitet einen Request
+ * @author Georg Reisinger
+ */
 public class Request {
 
     private final Socket socket;
@@ -29,9 +33,11 @@ public class Request {
         this.id = id;
         this.out = new PrintStream(this.socket.getOutputStream());
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        String line;
-        while (!(line = bufferedReader.readLine()).isBlank()) {
+        String line = bufferedReader.readLine();
+        while (!line.isBlank()) {
             rqBuilder.append(line + "\r\n");
+            line = bufferedReader.readLine();
+            System.out.println(line);
         }
         String request = rqBuilder.toString();
         String[] requestsLines = request.split("\r\n");
@@ -66,74 +72,39 @@ public class Request {
 
 
     /**
-     * get field
+     * Get PrintStream --> Output
      *
-     * @return out
+     * @return out PrintStream --> Output
      */
     public PrintStream getOut() {
         return this.out;
     }
 
     /**
-     * set field
+     * Command wie GET, PUT, POST, DEL
      *
-     * @param out
-     */
-    public void setOut(PrintStream out) {
-        this.out = out;
-    }
-
-    /**
-     * get field
-     *
-     * @return cmd
+     * @return cmd als String
      */
     public String getCmd() {
         return this.cmd;
     }
 
     /**
-     * set field
+     * Request url
      *
-     * @param cmd
-     */
-    public void setCmd(String cmd) {
-        this.cmd = cmd;
-    }
-
-    /**
-     * get field
-     *
-     * @return url
+     * @return url als String
      */
     public String getUrl() {
         return this.url;
     }
 
     /**
-     * set field
+     * Payload des Request
      *
-     * @param url
-     */
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    /**
-     * get field
-     *
-     * @return payload
+     * @return payload als String
      */
     public String getPayload() {
         return this.payload;
     }
 
-    /**
-     * set field
-     *
-     * @param payload
-     */
-    public void setPayload(String payload) {
-        this.payload = payload;
-    }
 }

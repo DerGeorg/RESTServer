@@ -5,6 +5,10 @@ import at.reisinger.server.msg.MsgHandler;
 import java.io.PrintStream;
 import java.net.Socket;
 
+/**
+ * Erstellt und sendet eine Response anhand des Requests
+ * @author Georg Reisinger
+ */
 public class Response {
 
     //private final Socket socket;
@@ -12,8 +16,8 @@ public class Response {
     private PrintStream out;
     private String       cmd;
     private String       url;
-    private final StringBuilder rqBuilder;
     private MsgHandler msgHandler;
+    private StringBuilder rqBuilder;
 
     /**
      * Nimmt die Daten des requests und generiert eine Response
@@ -40,33 +44,60 @@ public class Response {
                     if(lastBit.equals("messages")){
                         listAllMsg();
                     }else{
-                        sendResponse(msgHandler.getMsg(Integer.parseInt(lastBit)).getMsg());
+                        String message = msgHandler.getMsg(Integer.parseInt(lastBit)).getMsg();
+                        if(message == null){
+                            sendError("404");
+                        }else {
+                            sendResponse(message, "200");
+                        }
                     }
                 } else if (this.url.startsWith("/")) {
                     startseite();
                 }
             }else if (this.cmd.equals("POST")){
                 if (this.url.startsWith("/messages")) {
-                    sendResponse(msgHandler.addMsg(payload) + "");
+                    sendResponse(msgHandler.addMsg(payload) + "", "201");
                 }
             }else if (this.cmd.equals("PUT")){
                 if (this.url.startsWith("/messages")) {
-                    msgHandler.editMsg(id, "Edit");
+                    String lastBit = this.url.substring(this.url.lastIndexOf('/') + 1);
+                    System.out.println("Last Bit: " + lastBit);
+                    System.out.println("Payload" + payload);
+                    String message = msgHandler.editMsg(Integer.parseInt(lastBit), payload);
+                    if(message == null){
+                        sendError("404");
+                    }else {
+                        sendResponse("","200");
+                    }
                 }
             }else if (this.cmd.equals("DELETE")){
                 if (this.url.startsWith("/messages")) {
-                    msgHandler.delMsg(id);
+                    String lastBit = this.url.substring(this.url.lastIndexOf('/') + 1);
+                    String message = msgHandler.delMsg(Integer.parseInt(lastBit));
+                    if(message == null){
+                        sendError("404");
+                    }else {
+                        sendResponse("", "200");
+                    }
                 }
             }else{
-                sendResponse(sendError());
+                sendError("405");
             }
         }
     }
 
 
-
-    private String sendError() {
-        return "";
+    /**
+     * Sendet einen Error Response
+     * @param errorCode Der Error Code
+     */
+    private void sendError(String errorCode) {
+        out.print("HTTP/1.0 "+errorCode+"\r\n");
+        out.print("Server: Apache/0.8.4\r\n");
+        out.print("Content-Type: text/plain\r\n");
+        out.print("Content-Length: 1\r\n");
+        out.print("\r\n");
+        //out.print(responseText);
     }
 
     private void startseite() {
@@ -75,95 +106,35 @@ public class Response {
                 "show first message:   GET    /messages/1<br>" +
                 "show third message:   GET    /messages/3<br>" +
                 "update first message: PUT    /messages/1   (Payload: the message)<br>" +
-                "remove first message: DELETE /messages/1<br>");
+                "remove first message: DELETE /messages/1<br>", "200");
     }
 
     private void listAllMsg() {
-        sendResponse(msgHandler.getAllMsg());
+        sendResponse(msgHandler.getAllMsg(), "200");
         //sendResponse("Test");
     }
 
-    private void sendResponse(String responseText){
-        out.print("HTTP/1.0 200 OK\r\n");
-        out.print("Date: Fri, 31 Dec 2020 23:59:59 GMT\r\n");
+    /**
+     * Sendet eine Response
+     * @param responseText Text der zu senden ist
+     * @param code Http code
+     */
+    private void sendResponse(String responseText, String code){
+        out.print("HTTP/1.0 "+code+"\r\n");
         out.print("Server: Apache/0.8.4\r\n");
         out.print("Content-Type: text/plain\r\n");
-        out.print("Content-Length: 59\r\n");
-        out.print("Expires: Sat, 01 Jan 2025 00:59:59 GMT\r\n");
-        out.print("Last-modified: Fri, 09 Aug 1996 14:21:40 GMT\r\n");
+        out.print("Content-Length: "+responseText.length()+"\r\n");
         out.print("\r\n");
         out.print(responseText);
     }
 
     /**
-     * get field
+     * Get Msg Handler
      *
-     * @return out
-     */
-    public PrintStream getOut() {
-        return this.out;
-    }
-
-    /**
-     * set field
-     *
-     * @param out
-     */
-    public void setOut(PrintStream out) {
-        this.out = out;
-    }
-
-    /**
-     * get field
-     *
-     * @return cmd
-     */
-    public String getCmd() {
-        return this.cmd;
-    }
-
-    /**
-     * set field
-     *
-     * @param cmd
-     */
-    public void setCmd(String cmd) {
-        this.cmd = cmd;
-    }
-
-    /**
-     * get field
-     *
-     * @return url
-     */
-    public String getUrl() {
-        return this.url;
-    }
-
-    /**
-     * set field
-     *
-     * @param url
-     */
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    /**
-     * get field
-     *
-     * @return msgHandler
+     * @return msgHandler Handler der Nachrichten
      */
     public MsgHandler getMsghandler() {
         return this.msgHandler;
     }
 
-    /**
-     * set field
-     *
-     * @param msgHandler
-     */
-    public void setMsghandler(MsgHandler msgHandler) {
-        this.msgHandler = msgHandler;
-    }
 }
